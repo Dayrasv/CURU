@@ -1,0 +1,41 @@
+{
+  "name": "CuruData",
+  "type": "object",
+  "properties": {
+    "institution_id": {
+      "type": "string",
+      "description": "ID da institui\u00e7\u00e3o"
+    },
+    "sensor": {
+      "type": "string",
+      "description": "Nome do sensor"
+    },
+    "variable": {
+      "type": "string",
+      "enum": [
+        "temperatura",
+        "umidade",
+        "qualidade_ar",
+        "ruido",
+        "luminosidade",
+        "co2",
+        "pressao"
+      ],
+      "description": "Vari\u00e1vel medida"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora da medi\u00e7\u00e3o"
+    },
+    "value": {
+      "type": "number",
+      "description": "Valor medido"
+    }
+  },
+  "required": [
+    "institution_id",
+    "variable",
+    "value"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "name": "ClassGroup",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome da turma (ex: 8\u00ba ano A)"
+    },
+    "grade": {
+      "type": "string",
+      "description": "S\u00e9rie"
+    },
+    "shift": {
+      "type": "string",
+      "enum": [
+        "matutino",
+        "vespertino",
+        "noturno",
+        "integral"
+      ],
+      "description": "Turno"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "ID da institui\u00e7\u00e3o"
+    },
+    "teacher_email": {
+      "type": "string",
+      "description": "Email do professor respons\u00e1vel"
+    },
+    "student_count": {
+      "type": "number",
+      "description": "N\u00famero total de alunos na turma"
+    }
+  },
+  "required": [
+    "name",
+    "institution_id"
+  ]
+}

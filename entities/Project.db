@@ -1,0 +1,109 @@
+{
+  "name": "Project",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo do projeto"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o do projeto"
+    },
+    "problem": {
+      "type": "string",
+      "description": "Problema investigado"
+    },
+    "hypothesis": {
+      "type": "string",
+      "description": "Hip\u00f3tese"
+    },
+    "knowledge_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "\u00c1reas do conhecimento BNCC"
+    },
+    "disciplines": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Disciplinas envolvidas"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "ID da institui\u00e7\u00e3o"
+    },
+    "teacher_email": {
+      "type": "string",
+      "description": "Email do professor respons\u00e1vel"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de in\u00edcio"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planejado",
+        "em_andamento",
+        "concluido"
+      ],
+      "default": "planejado",
+      "description": "Status do projeto"
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs de anexos (fotos, relat\u00f3rios)"
+    },
+    "report": {
+      "type": "string",
+      "description": "Relat\u00f3rio e apresenta\u00e7\u00e3o"
+    },
+    "uses_macroproject": {
+      "type": "boolean",
+      "default": false,
+      "description": "Usa dados do CURU/Macroprojeto?"
+    },
+    "macroproject_variables": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Quais vari\u00e1veis do macroprojeto usa"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "completed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": "Etapas do projeto"
+    },
+    "completion_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de conclus\u00e3o"
+    }
+  },
+  "required": [
+    "title",
+    "institution_id"
+  ]
+}

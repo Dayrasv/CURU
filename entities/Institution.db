@@ -1,0 +1,58 @@
+{
+  "name": "Institution",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome da institui\u00e7\u00e3o"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "escola",
+        "ong",
+        "universidade",
+        "instituto",
+        "outro"
+      ],
+      "description": "Tipo da institui\u00e7\u00e3o"
+    },
+    "address": {
+      "type": "string",
+      "description": "Endere\u00e7o completo"
+    },
+    "city": {
+      "type": "string",
+      "description": "Cidade"
+    },
+    "state": {
+      "type": "string",
+      "description": "Estado"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Latitude para mapa"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "Longitude para mapa"
+    },
+    "responsible": {
+      "type": "string",
+      "description": "Nome do respons\u00e1vel"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Telefone de contato"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se a institui\u00e7\u00e3o est\u00e1 ativa"
+    }
+  },
+  "required": [
+    "name",
+    "type"
+  ]
+}
