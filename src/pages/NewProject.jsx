@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Button } from "../components/ui/button";
+import { Card } from "../components/ui/card";
+import { cn } from "../lib/utils";
 import { ArrowLeft, ArrowRight, Check, Lightbulb, BookOpen, Database, Rocket } from "lucide-react";
 import { toast } from "sonner";
-
+import { supabase } from "../lib/supabase";
 import StepIdentification from "../components/project-wizard/StepIdentification";
 import StepPedagogical from "../components/project-wizard/StepPedagogical";
 import StepData from "../components/project-wizard/StepData";
 import StepDevelopment from "../components/project-wizard/StepDevelopment";
 
+// representacao dos pasos na secao superior da pagina
 const STEPS = [
   { label: "Identificação", icon: Lightbulb, description: "Título, problema e hipótese" },
   { label: "Pedagógico", icon: BookOpen, description: "Disciplinas, turmas e alunos" },
@@ -34,13 +34,26 @@ export default function NewProject() {
 
   const { data: institutions = [] } = useQuery({
     queryKey: ["institutions"],
-    queryFn: () => base44.entities.Institution.list(),
-  });
+     queryFn: async () => {
+    const { data, error } = await supabase
+      .from("Escolas")
+      .select("*");
+
+    if (error) throw error;
+    return data;
+  },
+});
 
   const { data: classGroups = [] } = useQuery({
-    queryKey: ["classGroups"],
-    queryFn: () => base44.entities.ClassGroup.list(),
-  });
+  queryKey: ["classGroups"],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("ClassGroups")
+      .select("*");
+    if (error) throw error;
+    return data;
+  },
+});
 
   const createProjectMutation = useMutation({
     mutationFn: async () => {

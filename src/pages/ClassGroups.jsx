@@ -1,30 +1,30 @@
+// arquivo relacionado com as configuracoes da aba Turmas
+
+// Importación de hooks de React
 import React, { useState } from "react";
+
+// React Query para manejar datos (consultas y mutaciones)
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+// Cliente de Supabase (base de datos)
 import { supabase } from "../lib/supabase";
 
+// Componentes UI
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "../components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from "../components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "../components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "../components/ui/dialog";
 import { Badge } from "../components/ui/badge";
 
+// Iconos
 import { PlusCircle, Trash2 } from "lucide-react";
+
+// Notificaciones
 import { toast } from "sonner";
 
+// Etiquetas para mostrar el turno en texto bonito
 const shiftLabels = {
   matutino: "Matutino",
   vespertino: "Vespertino",
@@ -32,9 +32,11 @@ const shiftLabels = {
   integral: "Integral"
 };
 
+// Controla si el modal está abierto o cerrado
 export default function ClassGroups() {
   const [open, setOpen] = useState(false);
 
+  // Estado del formulario
   const [form, setForm] = useState({
     name: "",
     grade: "",
@@ -43,12 +45,16 @@ export default function ClassGroups() {
     student_count: ""
   });
 
+  // Estado para manejar errores de validación
+  const [errors, setErrors] = useState({});
+
+  // React Query (para refrescar datos automáticamente)
   const queryClient = useQueryClient();
 
-  // CLASS GROUPS
   const { data: classGroups = [], isLoading } = useQuery({
     queryKey: ["classGroups"],
     queryFn: async () => {
+      // Función que consulta la base de datos
       const { data, error } = await supabase
         .from("ClassGroups")
         .select("*");
@@ -59,14 +65,16 @@ export default function ClassGroups() {
     }
   });
 
-  // INSTITUCIONES
+  // Obtener instituciones
   const { data: institutions = [] } = useQuery({
     queryKey: ["institutions"],
     queryFn: async () => {
+      // Variables para paginar (Supabase trae max 1000 por request)
       let allData = [];
       let from = 0;
       const pageSize = 1000;
 
+      // Bucle para traer TODOS los registros
       while (true) {
         const { data, error } = await supabase
           .from("CURU_Intitucoes")
@@ -75,13 +83,15 @@ export default function ClassGroups() {
 
         if (error) throw error;
 
+        // Si no hay más datos, salir del bucle
         if (!data || data.length === 0) break;
 
+        // Acumular resultados
         allData = [...allData, ...data];
 
         from += pageSize;
       }
-
+      // Eliminar duplicados
       const unique = Array.from(
         new Set(allData.map(item => item.Escola?.trim()))
       ).map(name => ({
@@ -92,21 +102,23 @@ export default function ClassGroups() {
     }
   });
 
-  // CREATE
+  // Creando los datos para enviarlos a supabase: Creando una nueva turma
   const createMutation = useMutation({
     mutationFn: async (newData) => {
+       // Inserta datos en Supabase
       const { data, error } = await supabase
         .from("ClassGroups")
         .insert([newData]);
-
+        
       if (error) throw error;
 
       return data;
     },
     onSuccess: () => {
+      // Refresca la lista automáticamente
       queryClient.invalidateQueries({ queryKey: ["classGroups"] });
-      setOpen(false);
-
+      
+      //limpia el formulario
       setForm({
         name: "",
         grade: "",
@@ -115,13 +127,15 @@ export default function ClassGroups() {
         student_count: ""
       });
 
+      // Notificación
       toast.success("Turma cadastrada");
     }
   });
 
-  // DELETE
+  // Eliminar turma
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
+      // Borra por ID
       const { error } = await supabase
         .from("ClassGroups")
         .delete()
@@ -135,13 +149,24 @@ export default function ClassGroups() {
     }
   });
 
+  // Enviar formulario
   const handleSubmit = () => {
-    if (!form.name || !form.institution_id) {
-      toast.error("Nome e Instituição são obrigatórios");
+    
+    // Objeto para errores
+    const newErrors = {};
+
+    if (!form.name) newErrors.name = true;
+    if (!form.institution_id) newErrors.institution_id = true;
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      toast.error("Preencha os campos obrigatórios");
       return;
     }
 
-    createMutation.mutate({
+    // Construir objeto final
+    const payload = {
       name: form.name,
       grade: form.grade || null,
       shift: form.shift,
@@ -149,13 +174,25 @@ export default function ClassGroups() {
       student_count: form.student_count
         ? parseInt(form.student_count)
         : null
-    });
+    };
+
+    if (!payload.name) {
+      toast.error("Nome da turma");
+      return;
+    }
+
+    if (!payload.institution_id) {
+      toast.error("Instituiçao");
+      return;
+    }
+     // Enviar a Supabase
+    createMutation.mutate(payload);
   };
 
   return (
     <div className="space-y-6">
 
-      {/* HEADER */}
+      {/* Texto de cant de turmas cadastradas */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">Turmas</h1>
@@ -164,6 +201,7 @@ export default function ClassGroups() {
           </p>
         </div>
 
+        {/* Boton de adicionar nueva turma */}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button className="gap-2">
@@ -172,6 +210,7 @@ export default function ClassGroups() {
             </Button>
           </DialogTrigger>
 
+          {/* Boton de adicionar nuevo cadastro */}
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Cadastrar Turma</DialogTitle>
@@ -181,22 +220,31 @@ export default function ClassGroups() {
               <div className="space-y-2"></div>
               <Label>Nome da Turma *</Label>
               <Input
-                placeholder="Ex: 8º Ano A"
+                placeholder="Ex: 8 Ano A"
                 value={form.name}
-                onChange={(e) =>
-                  setForm({ ...form, name: e.target.value })
-                }
+                className={errors.name ? "border-red-500" : ""}
+                onChange={(e) => {
+                  setForm({ ...form, name: e.target.value });
+                  setErrors((prev) => ({
+                    ...prev,
+                    name: false
+                  }));
+                }}
               />
 
               <div className="space-y-2"></div>
               <Label>Instituição *</Label>
               <Select
                 value={form.institution_id}
-                onValueChange={(v) =>
-                  setForm({ ...form, institution_id: v })
-                }
+                onValueChange={(v) => {
+                  setForm({ ...form, institution_id: v });
+                  setErrors((prev) => ({
+                    ...prev,
+                    institution_id: false
+                  }));
+                }}
               >
-                <SelectTrigger>
+                <SelectTrigger className={errors.institution_id ? "border-red-500" : ""}>
                   <SelectValue placeholder="Escola" />
                 </SelectTrigger>
 
@@ -209,7 +257,6 @@ export default function ClassGroups() {
                 </SelectContent>
               </Select>
 
-              {/* 🔥 ÚNICO CAMBIO: SÉRIE + TURNO */}
               <div className="grid grid-cols-2 gap-3">
 
                 <div className="space-y-2">
@@ -244,8 +291,9 @@ export default function ClassGroups() {
                   </Select>
                 </div>
               </div>
-          <div className="space-y-2"></div>
-            <Label>Quantidade de alunos</Label>
+
+              <div className="space-y-2"></div>
+              <Label>Quantidade de alunos</Label>
               <Input
                 type="number"
                 min={0}
@@ -258,7 +306,6 @@ export default function ClassGroups() {
                   })
                 }
               />
-           
 
               <Button onClick={handleSubmit} className="w-full">
                 Cadastrar Turma

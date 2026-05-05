@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, Calendar, School, Users, Leaf, Trash2, Paperclip, CheckCircle2, Circle, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
-
+import { supabase } from "../lib/supabase";
 const statusLabels = { planejado: "Planejado", em_andamento: "Em Andamento", concluido: "Concluído" };
 
 export default function ProjectDetail() {

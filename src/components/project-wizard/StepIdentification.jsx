@@ -1,7 +1,9 @@
+//pagina que é aberta quando é feito o cadastro do projeto: etapa de Identificacao
+
 import React from "react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import { Label } from "../ui/label";
 
 export default function StepIdentification({ form, setForm }) {
   return (

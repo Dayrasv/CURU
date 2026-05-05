@@ -1,7 +1,9 @@
+//pagina que é aberta quando é feito o cadastro do projeto: etapa de Dados curu
+
 import React from "react";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
+import { Label } from "../ui/label";
+import { Switch } from "../ui/switch";
+import { Badge } from "../ui/badge";
 import { Leaf } from "lucide-react";
 
 const CURU_VARIABLES = [

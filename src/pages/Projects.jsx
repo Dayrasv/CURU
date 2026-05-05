@@ -1,6 +1,7 @@
+// arquivo relacionado com as configuracoes da aba Projectos
+
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-//import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
@@ -9,12 +10,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Card } from "../components/ui/card";
 import { PlusCircle, Search, Calendar, School, Leaf } from "lucide-react";
 import { format } from "date-fns";
+import { supabase } from "../lib/supabase";
 
 const statusStyles = {
   planejado: "bg-muted text-muted-foreground",
   em_andamento: "bg-accent/20 text-accent-foreground border border-accent/30",
   concluido: "bg-primary/15 text-primary",
 };
+
 const statusLabels = {
   planejado: "Planejado",
   em_andamento: "Em Andamento",
@@ -27,15 +30,39 @@ export default function Projects() {
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ["projects"],
-    queryFn: () => base44.entities.Project.list("-created_date"),
+    queryFn: async () => {
+    const { data, error } = await supabase
+      .from("Projects")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    return data;
+  },
   });
+
   const { data: institutions = [] } = useQuery({
     queryKey: ["institutions"],
-    queryFn: () => base44.entities.Institution.list(),
+    queryFn: async () => {
+    const { data, error } = await supabase
+      .from("Escolas") 
+      .select("*");
+
+    if (error) throw error;
+    return data;
+  },
   });
+
   const { data: participations = [] } = useQuery({
     queryKey: ["participations"],
-    queryFn: () => base44.entities.Participation.list(),
+    queryFn: async () => {
+    const { data, error } = await supabase
+      .from("Participations")
+      .select("*");
+
+    if (error) throw error;
+    return data;
+  },
   });
 
   const instMap = {};
@@ -59,10 +86,10 @@ export default function Projects() {
           <h1 className="text-2xl font-bold tracking-tight">Projetos</h1>
           <p className="text-sm text-muted-foreground mt-1">{projects.length} projetos cadastrados</p>
         </div>
+        {/* foi feita a referencia ao fazer clic no botao */}
         <Link to="/projects/new">
           <Button className="gap-2 rounded-xl">
-            <PlusCircle className="w-4 h-4" /> Novo Projeto
-          </Button>
+            <PlusCircle className="w-4 h-4" /> Novo Projeto </Button>
         </Link>
       </div>
 

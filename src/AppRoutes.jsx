@@ -5,6 +5,7 @@ import Instituicoes from "./pages/Institutions";
 import Turmas from "./pages/ClassGroups";
 import Curu from "./pages/Curu";
 import AppLayout from "./components/layout/AppLayout";
+import NewProject from "./pages/NewProject";
 
 export default function AppRoutes() {
   return (
@@ -15,6 +16,7 @@ export default function AppRoutes() {
         <Route path="/instituicoes" element={<Instituicoes />} />
         <Route path="/turmas" element={<Turmas />} />
         <Route path="/curu" element={<Curu />} />
+        <Route path="/projects/new" element={<NewProject />} />
       </Route>
     </Routes>
   );
