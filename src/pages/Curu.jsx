@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import StatCard from "../components/dashboard/StatCard";
 import { Thermometer, Droplets, Sun, Battery } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-//import "leaflet/dist/leaflet.css";
+
+
 export default function Curu() {
 
   const data = {

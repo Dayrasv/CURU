@@ -13,7 +13,7 @@ const navItems = [
   { label: "Instituições", icon: School, path: "/instituicoes" },
   { label: "Turmas", icon: Users, path: "/turmas" },
   { label: "Tecnologias", icon: CircuitBoard, path: "/curu" },
-
+  { label: "Lora", icon: Menu, path: "/lora" },
 ];
 
 export default function Sidebar() {

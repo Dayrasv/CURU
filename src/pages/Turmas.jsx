@@ -33,7 +33,7 @@ const shiftLabels = {
 };
 
 // Controla si el modal está abierto o cerrado
-export default function ClassGroups() {
+export default function Turmas() {
   const [open, setOpen] = useState(false);
 
   // Estado del formulario
@@ -51,12 +51,12 @@ export default function ClassGroups() {
   // React Query (para refrescar datos automáticamente)
   const queryClient = useQueryClient();
 
-  const { data: classGroups = [], isLoading } = useQuery({
-    queryKey: ["classGroups"],
+  const { data: Turmas = [], isLoading } = useQuery({
+    queryKey: ["Turmas"],
     queryFn: async () => {
       // Función que consulta la base de datos
       const { data, error } = await supabase
-        .from("ClassGroups")
+        .from("Turmas")
         .select("*");
 
       if (error) throw error;
@@ -107,7 +107,7 @@ export default function ClassGroups() {
     mutationFn: async (newData) => {
        // Inserta datos en Supabase
       const { data, error } = await supabase
-        .from("ClassGroups")
+        .from("Turmas")
         .insert([newData]);
         
       if (error) throw error;
@@ -116,7 +116,7 @@ export default function ClassGroups() {
     },
     onSuccess: () => {
       // Refresca la lista automáticamente
-      queryClient.invalidateQueries({ queryKey: ["classGroups"] });
+      queryClient.invalidateQueries({ queryKey: ["Turmas"] });
       
       //limpia el formulario
       setForm({
@@ -137,14 +137,14 @@ export default function ClassGroups() {
     mutationFn: async (id) => {
       // Borra por ID
       const { error } = await supabase
-        .from("ClassGroups")
+        .from("Turmas")
         .delete()
         .eq("id", id);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["classGroups"] });
+      queryClient.invalidateQueries({ queryKey: ["Turmas"] });
       toast.success("Turma removida");
     }
   });
@@ -197,7 +197,7 @@ export default function ClassGroups() {
         <div>
           <h1 className="text-2xl font-bold">Turmas</h1>
           <p className="text-sm text-muted-foreground">
-            {classGroups.length} turmas cadastradas
+            {Turmas.length} turmas cadastradas
           </p>
         </div>
 
@@ -322,7 +322,7 @@ export default function ClassGroups() {
       ) : (
         <div className="grid md:grid-cols-3 gap-4">
 
-          {classGroups.map((cls) => (
+          {Turmas.map((cls) => (
             <Card key={cls.id} className="p-4">
 
               <div className="flex justify-between">

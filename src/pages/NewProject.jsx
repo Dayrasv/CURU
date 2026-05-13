@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
@@ -9,14 +9,12 @@ import { toast } from "sonner";
 import { supabase } from "../lib/supabase";
 import StepIdentification from "../components/project-wizard/StepIdentification";
 import StepPedagogical from "../components/project-wizard/StepPedagogical";
-import StepData from "../components/project-wizard/StepData";
 import StepDevelopment from "../components/project-wizard/StepDevelopment";
 
 // representacao dos pasos na secao superior da pagina
 const STEPS = [
-  { label: "Identificação", icon: Lightbulb, description: "Título, problema e hipótese" },
-  { label: "Pedagógico", icon: BookOpen, description: "Disciplinas, turmas e alunos" },
-  { label: "Dados", icon: Database, description: "Integração com CURU" },
+  { label: "Identificação", icon: Lightbulb, description: "Título, problema e objetivo" },
+  { label: "Metodologia", icon: BookOpen, description: "Turmas e escolas" },
   { label: "Desenvolvimento", icon: Rocket, description: "Etapas e cronograma" },
 ];
 
@@ -44,11 +42,11 @@ export default function NewProject() {
   },
 });
 
-  const { data: classGroups = [] } = useQuery({
-  queryKey: ["classGroups"],
+  const { data: Turmas = [] } = useQuery({
+  queryKey: ["Turmas"],
   queryFn: async () => {
     const { data, error } = await supabase
-      .from("ClassGroups")
+      .from("Turmas")
       .select("*");
     if (error) throw error;
     return data;
@@ -57,37 +55,62 @@ export default function NewProject() {
 
   const createProjectMutation = useMutation({
     mutationFn: async () => {
-      const { participations, ...projectData } = form;
-      const user = await base44.auth.me();
-      projectData.teacher_email = user.email;
-      const project = await base44.entities.Project.create(projectData);
+      console.log("Esta se executando o mutation?");
 
-      // Create participations
-      for (const p of participations) {
-        if (p.class_group_id && p.students_involved) {
-          await base44.entities.Participation.create({
-            institution_id: form.institution_id,
-            project_id: project.id,
-            class_group_id: p.class_group_id,
-            students_involved: parseInt(p.students_involved),
-          });
-        }
-      }
-      return project;
-    },
+      const { participations, ...f } = form;
+
+      const {
+          data: { user },
+          error: authError,} = await supabase.auth.getUser();
+
+      // if (authError || !user) throw new Error("Usuario no autenticado");
+      
+      const projectPayload = {
+            titulo: f.title,
+            problema: f.problem,
+            objetivo: f.hypothesis, 
+            impacto: f.description, 
+            institucao: f.institution_id,
+            tecnologia: f.uses_macroproject ? "macroproject" : "standard",
+            area_conhecimento: JSON.stringify(f.knowledge_areas),
+            Disciplinas: JSON.stringify(f.disciplines),
+            data_inicio: f.start_date,
+            etapas_projeto: JSON.stringify(f.steps),
+  };
+
+   const { data, error } = await supabase
+      .from("Projects")
+      .insert([projectPayload])
+      .select()
+      .single();
+
+      console.log("DATA:", data);
+      console.log("ERROR:", error);   
+
+        if (error) { throw error; }
+
+    return data;
+  },
+
     onSuccess: (project) => {
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
-      queryClient.invalidateQueries({ queryKey: ["participations"] });
+      queryClient.invalidateQueries({ queryKey: ["Projects"] });
       toast.success("Projeto criado com sucesso!");
-      navigate(`/projects/${project.id}`);
+      //navigate(`/projects/${project.id}`);
     },
+   
   });
 
+  // sao os campos obrigatorios que habilitan o botão
   const canProceed = () => {
+    //console.log("canProceed step:", step);
+    //console.log("institution_id:", form.institution_id);
+    
     if (step === 0) return form.title.trim().length > 0;
     if (step === 1) return form.institution_id;
+    if (step === 2) return form.start_date;
     return true;
   };
+
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -130,9 +153,8 @@ export default function NewProject() {
       {/* Step Content */}
       <Card className="p-6 sm:p-8 rounded-2xl border-border/50">
         {step === 0 && <StepIdentification form={form} setForm={setForm} />}
-        {step === 1 && <StepPedagogical form={form} setForm={setForm} institutions={institutions} classGroups={classGroups} />}
-        {step === 2 && <StepData form={form} setForm={setForm} />}
-        {step === 3 && <StepDevelopment form={form} setForm={setForm} />}
+        {step === 1 && <StepPedagogical form={form} setForm={setForm} institutions={institutions} Turmas={Turmas} />}
+        {step === 2 && <StepDevelopment form={form} setForm={setForm} />}
       </Card>
 
       {/* Navigation */}
@@ -149,19 +171,42 @@ export default function NewProject() {
         {step < STEPS.length - 1 ? (
           <Button
             className="gap-2 rounded-xl"
-            onClick={() => setStep(step + 1)}
+            onClick={() => setStep((prev) => prev + 1)}
             disabled={!canProceed()}
           >
             Próximo <ArrowRight className="w-4 h-4" />
           </Button>
         ) : (
           <Button
-            className="gap-2 rounded-xl"
-            onClick={() => createProjectMutation.mutate()}
-            disabled={!canProceed() || createProjectMutation.isPending}
-          >
-            {createProjectMutation.isPending ? "Criando..." : "Criar Projeto"} <Check className="w-4 h-4" />
-          </Button>
+              className="gap-2 rounded-xl"
+              onClick={() => {
+                console.log("FORM:", form);
+
+                const { participations, ...f } = form;
+
+                const projectPayload = {
+                  titulo: f.title,
+                  problema: f.problem,
+                  objetivo: f.hypothesis, 
+                  impacto: f.description, 
+                  institucao: f.institution_id,
+                  tecnologia: f.uses_macroproject ? "macroproject" : "standard",
+                  area_conhecimento: JSON.stringify(f.knowledge_areas),
+                  Disciplinas: JSON.stringify(f.disciplines),
+                  data_inicio: f.start_date,
+                  etapas_projeto: JSON.stringify(f.steps),
+                };
+
+                console.log("PAYLOAD:", projectPayload);
+
+                createProjectMutation.mutate();
+              }}
+              disabled={!canProceed() || createProjectMutation.isPending}
+            >
+
+              {createProjectMutation.isPending ? "Criando..." : "Criar Projeto"}
+              <Check className="w-4 h-4" />
+            </Button>          
         )}
       </div>
     </div>

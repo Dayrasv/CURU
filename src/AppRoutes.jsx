@@ -2,10 +2,11 @@ import { Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Projetos from "./pages/Projects";
 import Instituicoes from "./pages/Institutions";
-import Turmas from "./pages/ClassGroups";
+import Turmas from "./pages/Turmas";
 import Curu from "./pages/Curu";
 import AppLayout from "./components/layout/AppLayout";
 import NewProject from "./pages/NewProject";
+import Prueba_Lora from "./pages/Prueba_Lora";
 
 export default function AppRoutes() {
   return (
@@ -17,6 +18,7 @@ export default function AppRoutes() {
         <Route path="/turmas" element={<Turmas />} />
         <Route path="/curu" element={<Curu />} />
         <Route path="/projects/new" element={<NewProject />} />
+        <Route path="/lora" element={<Prueba_Lora />} />
       </Route>
     </Routes>
   );

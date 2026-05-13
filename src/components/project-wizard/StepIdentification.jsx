@@ -12,7 +12,7 @@ export default function StepIdentification({ form, setForm }) {
         <Label className="text-sm font-semibold">Título do Projeto *</Label>
         <Input
           value={form.title}
-          onChange={e => setForm({ ...form, title: e.target.value })}
+          onChange={e => setForm(prev => ({ ...prev, title: e.target.value }))}
           placeholder="Ex: Estudo da qualidade do ar na região escolar"
           className="rounded-xl"
         />
@@ -21,26 +21,26 @@ export default function StepIdentification({ form, setForm }) {
         <Label className="text-sm font-semibold">Problema Investigado</Label>
         <Textarea
           value={form.problem}
-          onChange={e => setForm({ ...form, problem: e.target.value })}
+           onChange={e => setForm(prev => ({ ...prev, problem: e.target.value }))}
           placeholder="Qual problema vocês estão investigando?"
           className="rounded-xl min-h-[100px]"
         />
       </div>
       <div className="space-y-2">
-        <Label className="text-sm font-semibold">Hipótese</Label>
+        <Label className="text-sm font-semibold">Objetivo</Label>
         <Textarea
           value={form.hypothesis}
-          onChange={e => setForm({ ...form, hypothesis: e.target.value })}
-          placeholder="Qual a hipótese inicial?"
+          onChange={e => setForm(prev => ({ ...prev, hypothesis: e.target.value }))}
+          placeholder="O que você quer alcançar ao resolver o problema?"
           className="rounded-xl min-h-[100px]"
         />
       </div>
       <div className="space-y-2">
-        <Label className="text-sm font-semibold">Descrição</Label>
+        <Label className="text-sm font-semibold">Impacto do projeto</Label>
         <Textarea
           value={form.description}
-          onChange={e => setForm({ ...form, description: e.target.value })}
-          placeholder="Descreva brevemente o projeto..."
+          onChange={e => setForm(prev => ({ ...prev, description: e.target.value }))}
+          placeholder="Por que o tema é tão importante?"
           className="rounded-xl min-h-[80px]"
         />
       </div>

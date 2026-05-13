@@ -38,8 +38,8 @@ export default function ProjectDetail() {
     queryFn: () => base44.entities.Participation.list(),
   });
 
-  const { data: classGroups = [] } = useQuery({
-    queryKey: ["classGroups"],
+  const { data: Turmas = [] } = useQuery({
+    queryKey: ["Turmas"],
     queryFn: () => base44.entities.ClassGroup.list(),
   });
 
@@ -144,7 +144,7 @@ export default function ProjectDetail() {
         </Card>
 
         <Card className="rounded-2xl border-border/50">
-          <CardHeader><CardTitle className="text-base">Contexto Pedagógico</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">Metodológico</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div>
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Áreas do Conhecimento</p>
@@ -216,7 +216,7 @@ export default function ProjectDetail() {
           ) : (
             <div className="space-y-2">
               {projParticipations.map(p => {
-                const cls = classGroups.find(c => c.id === p.class_group_id);
+                const cls = Turmas.find(c => c.id === p.class_group_id);
                 return (
                   <div key={p.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
                     <span className="text-sm font-medium">{cls?.name || "Turma"}</span>
